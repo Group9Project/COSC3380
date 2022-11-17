@@ -104,12 +104,12 @@ app.post('/signup', function(req, res) {
 
     if(password.length < 5) {
         req.flash('message', 'Password needs to be longer than 5 characters')
-        res.redirect('/signup');
+        return res.redirect('/signup');
     }
 
     if(password != passwordConfirmation) {
         req.flash('message', 'Password Confirmation must match Password')
-        res.redirect('/signup');
+        return res.redirect('/signup');
     }
 
     var queryUser = "SELECT * FROM [dbo].[users] WHERE username = \'"+username+"\';"
@@ -121,14 +121,14 @@ app.post('/signup', function(req, res) {
         request.query(queryUser, function(err, recordset) {
             if(err) {
                 req.flash('message', 'Something went wrong, please try again');
-                res.redirect('/signup');
+                return res.redirect('/signup');
             }
             if(recordset.recordsets[0].length == 0) {
                 var request = new sql.Request();
                 request.query(queryEmail, function(err, recordset) {
                     if(err) {
                         req.flash('message', 'Something went wrong, please try again');
-                        res.redirect('/signup');
+                        return res.redirect('/signup');
                     }
                     if(recordset.recordsets[0].length == 0) {
                         var querySignUp = "INSERT INTO [dbo].[users] (username, email, pword) VALUES ('"+req.body.username+"','"+req.body.email+"','"+req.body.pword+"')";
@@ -138,13 +138,13 @@ app.post('/signup', function(req, res) {
                     }
                     else {
                         req.flash('message', 'This email is already taken');
-                        res.redirect('/signup');
+                        return res.redirect('/signup');
                     }
                 })
             }
             else {
                 req.flash('message', 'This username is already taken');
-                res.redirect('/signup');
+                return res.redirect('/signup');
             }
         })
     })
